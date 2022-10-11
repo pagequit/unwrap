@@ -1,2 +1,3 @@
 # unwrap
-Yet another Option&lt;T> and Result&lt;T, E>, implemented for TypeScript.
+
+Yet another TypeScript `Option<T>` and `Result<T, E>` implementation.
