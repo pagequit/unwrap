@@ -1,4 +1,4 @@
-import Result from "./result.ts";
+import Result, { Err, Ok } from "./result.ts";
 
 export default class Option<T> {
   private value: T;
@@ -125,9 +125,13 @@ export default class Option<T> {
     return old;
   }
 
-  // transpose<E>(): Result<Option<T>, E> {
-  //   // TODO
-  // }
+  transpose<E>(this: Option<Result<T, E>>): Result<Option<T>, E> {
+    return this.isNone()
+      ? Ok(this)
+      : (this.value.isOk()
+        ? Ok(Some(this.value.unwrap()))
+        : Err(this.value.unwrapErr()));
+  }
 
   unwrap(): T {
     return this.expect("called 'unwrap()' on a 'None' value");
