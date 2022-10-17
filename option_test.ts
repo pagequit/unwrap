@@ -9,6 +9,7 @@ import {
   spy,
 } from "https://deno.land/std@0.157.0/testing/mock.ts";
 import Option, { None, OptionType, Some } from "./option.ts";
+import Result, { Err, Ok } from "./result.ts";
 
 Deno.test("None", () => {
   const none = None();
@@ -222,13 +223,21 @@ Deno.test("mapOrElse", () => {
   assertEquals(y.mapOrElse(() => 12, callback), 12);
 });
 
-// Deno.test("okOr", () => {
-//   // TODO
-// });
+Deno.test("okOr", () => {
+  const x: Option<string> = Some("foo");
+  assertEquals(x.okOr(0), Ok("foo"));
 
-// Deno.test("okOrElse", () => {
-//   // TODO
-// });
+  const y: Option<string> = None();
+  assertEquals(y.okOr(0), Err(0));
+});
+
+Deno.test("okOrElse", () => {
+  const x: Option<string> = Some("foo");
+  assertEquals(x.okOrElse(() => 0), Ok("foo"));
+
+  const y: Option<string> = None();
+  assertEquals(y.okOrElse(() => 0), Err(0));
+});
 
 Deno.test("or", () => {
   let x: Option<number>;
@@ -295,9 +304,22 @@ Deno.test("take", () => {
   assertEquals(y, None());
 });
 
-// Deno.test("transpose", () => {
-//   // TODO
-// });
+Deno.test("transpose", () => {
+  let x: Result<Option<number>, string>;
+  let y: Option<Result<number, string>>;
+
+  x = Ok(Some(5));
+  y = Some(Ok(5));
+  assertEquals(x, y.transpose());
+
+  x = Err("foo");
+  y = Some(Err("foo"));
+  assertEquals(x, y.transpose());
+
+  x = Ok(None());
+  y = None();
+  assertEquals(x, y.transpose());
+});
 
 Deno.test("unwrap", () => {
   assertEquals(Some(2).unwrap(), 2);
@@ -362,6 +384,14 @@ Deno.test("zip", () => {
   assertEquals(x.zip(z), None());
 });
 
-// Deno.test("zipWith", () => {
-//   // TODO
-// });
+Deno.test("zipWith", () => {
+  function Point(x: number, y: number) {
+    return Object.create({ x, y });
+  }
+
+  const x = Some(1);
+  const y = Some(2);
+
+  assertEquals(x.zipWith(y, Point), Some(Point(1, 2)));
+  assertEquals(x.zipWith(None(), Point), None());
+});

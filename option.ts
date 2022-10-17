@@ -36,7 +36,7 @@ export default class Option<T> {
   }
 
   filter(predicate: (value: T) => boolean): Option<T> {
-    return this.isSome() && predicate(this.value) ? this : None();
+    return (this.isSome() && predicate(this.value)) ? this : None();
   }
 
   flatten(): Option<unknown> {
@@ -65,7 +65,10 @@ export default class Option<T> {
   }
 
   inspect(callback: (value: T) => void): Option<T> {
-    this.isSome() && callback(this.value);
+    if (this.isSome()) {
+      callback(this.value);
+    }
+
     return this;
   }
 
@@ -93,13 +96,13 @@ export default class Option<T> {
     return this.isSome() ? callback(this.value) : defaultCallback();
   }
 
-  // okOr() {
-  //   // TODO
-  // }
+  okOr<E>(err: E): Result<T, E> {
+    return this.isSome() ? Ok(this.value) : Err(err);
+  }
 
-  // okOrElse() {
-  //   // TODO
-  // }
+  okOrElse<E>(callback: () => E): Result<T, E> {
+    return this.isSome() ? Ok(this.value) : Err(callback());
+  }
 
   or(option: Option<T>): Option<T> {
     return this.isSome() ? this : option;
@@ -125,7 +128,7 @@ export default class Option<T> {
     return old;
   }
 
-  transpose<E>(this: Option<Result<T, E>>): Result<Option<T>, E> {
+  transpose<U, E>(this: Option<Result<U, E>>): Result<Option<U>, E> {
     return this.isNone()
       ? Ok(this)
       : (this.value.isOk()
@@ -156,18 +159,23 @@ export default class Option<T> {
   }
 
   xor(option: Option<T>): Option<T> {
-    return this.isNone() ? option : option.isNone() ? this : None();
+    return this.isNone() ? option : (option.isNone() ? this : None());
   }
 
   zip<U>(other: Option<U>): Option<[T, U]> {
-    return this.isSome() && other.isSome()
+    return (this.isSome() && other.isSome())
       ? Some([this.value, other.value])
       : None();
   }
 
-  // zipWith() {
-  //   // TOOD
-  // }
+  zipWith<U, R>(
+    other: Option<U>,
+    callback: (value: T, otherValue: U) => R,
+  ): Option<R> {
+    return (this.isSome() && other.isSome())
+      ? Some(callback(this.value, other.value))
+      : None();
+  }
 }
 
 export enum OptionType {
