@@ -9,6 +9,12 @@ export default class Result<T, E> {
     this.discriminant = discriminant;
   }
 
+  *[Symbol.iterator]() {
+    if (this.isOk()) {
+      yield Some(this.value);
+    }
+  }
+
   and<U>(result: Result<U, E>): Result<U, E> {
     return this.isErr() ? this : result;
   }
@@ -17,23 +23,17 @@ export default class Result<T, E> {
     return this.isErr() ? this : callback(this.value as T);
   }
 
-  *[Symbol.iterator]() {
-    if (this.isOk()) {
-      yield Some(this.value);
-    }
+  contains(value: T): boolean {
+    return this.isOk() && this.value === value;
   }
 
-  // contains<U>(value: U): boolean {
-  //   // TODO
-  // }
+  containsErr(value: E): boolean {
+    return this.isErr() && this.value === value;
+  }
 
-  // containsErr<F>(value: F): boolean {
-  //   // TODO
-  // }
-
-  // err(): Option<E> {
-  //   // TODO
-  // }
+  err(): Option<E> {
+    return this.isErr() ? Some(this.value) : None();
+  }
 
   expect(msg: string): T {
     if (this.isErr()) {
@@ -51,17 +51,19 @@ export default class Result<T, E> {
     return this.value as E;
   }
 
-  // flatten(): Result<T, E> {
-  //   // TODO
-  // }
+  flatten<U>(this: Result<Result<U, E>, E>): Result<U, E> {
+    return this.andThen((value) => value);
+  }
 
-  inspect(callback: (value: T) => void) {
+  inspect(callback: (value: T) => void): Result<T, E> {
     this.isOk() && callback(this.value);
+
     return this;
   }
 
   inspectErr(callback: (value: E) => void) {
     this.isErr() && callback(this.value);
+
     return this;
   }
 
@@ -126,9 +128,9 @@ export default class Result<T, E> {
   }
 
   // FIXME
-  orElse<F>(callback: () => Result<T, F>): Result<T, F> {
-    return this.isOk() ? this : result;
-  }
+  // orElse<F>(callback: () => Result<T, F>): Result<T, F> {
+  //   return this.isOk() ? this : result;
+  // }
 
   // transpose<E>(): Result<Option<T>, E> {
   //   // TODO: :thinking:

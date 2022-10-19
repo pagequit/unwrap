@@ -106,15 +106,12 @@ Deno.test("flatten", () => {
   const x: Option<Option<string>> = Some(Some("foo"));
   assertEquals(Some("foo"), x.flatten());
 
-  const y: Option<Option<string>> = Some(None());
+  const y: Option<Option<string>> = None();
   assertEquals(None(), y.flatten());
 
-  const z: Option<Option<string>> = None();
-  assertEquals(None(), z.flatten());
-
-  const n: Option<Option<Option<number>>> = Some(Some(Some(6)));
-  assertEquals(Some(Some(6)), n.flatten());
-  assertEquals(Some(6), n.flatten().flatten());
+  const z: Option<Option<Option<number>>> = Some(Some(Some(6)));
+  assertEquals(Some(Some(6)), z.flatten());
+  assertEquals(Some(6), z.flatten().flatten());
 });
 
 Deno.test("getOrInsert", () => {

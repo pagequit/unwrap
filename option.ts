@@ -24,7 +24,7 @@ export default class Option<T> {
   }
 
   contains(value: T): boolean {
-    return value === this.value;
+    return this.isSome() && value === this.value;
   }
 
   expect(msg: string): T {
@@ -39,8 +39,8 @@ export default class Option<T> {
     return (this.isSome() && predicate(this.value)) ? this : None();
   }
 
-  flatten(): Option<unknown> {
-    return this.value instanceof Option ? this.value : None();
+  flatten<U>(this: Option<Option<U>>): Option<U> {
+    return this.andThen((value) => value);
   }
 
   getOrInsert(value: T): T {
