@@ -13,6 +13,8 @@ export default class Option<T> {
     if (this.isSome()) {
       yield this;
     }
+
+    return None();
   }
 
   and<U>(option: Option<U>): Option<U> {
@@ -57,7 +59,7 @@ export default class Option<T> {
     return this.value;
   }
 
-  insert(value: T) {
+  insert(value: T): T {
     this.value = value;
     this.discriminant = OptionType.Some;
 
@@ -82,6 +84,10 @@ export default class Option<T> {
 
   isSomeAnd(predicate: (value: T) => boolean): boolean {
     return this.isSome() && predicate(this.value);
+  }
+
+  iter(): Generator<this, None, Option<T>> {
+    return this[Symbol.iterator]();
   }
 
   map<U>(callback: (value: T) => U): Option<U> {

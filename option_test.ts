@@ -26,8 +26,8 @@ Deno.test("Some", () => {
 });
 
 Deno.test("iterator", () => {
-  function callback<T>(value: T): void {
-    console.log(value);
+  function callback<T>(value: T): T {
+    return value;
   }
 
   const inspectSpy = spy(callback);
@@ -182,6 +182,27 @@ Deno.test("isSomeAnd", () => {
   assertEquals(Some(2).isSomeAnd(predicate), true);
   assertEquals(Some(0).isSomeAnd(predicate), false);
   assertEquals(None().isSomeAnd(predicate), false);
+});
+
+Deno.test("iter", () => {
+  const x = Some(4);
+  const iterX = x.iter();
+  const x1 = iterX.next();
+
+  assertEquals(x1.value, Some(4));
+  assertEquals(x1.done, false);
+
+  const x2 = iterX.next();
+
+  assertEquals(x2.value, None());
+  assertEquals(x2.done, true);
+
+  const y = None();
+  const iterY = y.iter();
+  const y1 = iterY.next();
+
+  assertEquals(y1.value, None());
+  assertEquals(y1.done, true);
 });
 
 Deno.test("map", () => {
