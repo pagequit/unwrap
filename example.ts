@@ -1,15 +1,16 @@
-import { None, Some } from "./mod.ts";
+import { Ok } from "./mod.ts";
+import Result from "./result.ts";
+import match from "./match.ts";
 
-const x = Some("foo");
-
-for (const foo of x) {
-  console.log(foo);
+function pseudoFetch(): Promise<Result<{ data: unknown }, string>> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      return resolve(Ok({ data: 42 }));
+    }, 300);
+  });
 }
 
-for (const none of None()) {
-  console.log(none);
-}
-
-const y = Some(2);
-const z = Promise.any(x.zip(y));
-console.log(z);
+match<{ data: unknown }, string>(Ok({ data: 42 }), {
+  Ok: ({ data }) => console.log(data),
+  Err: (error) => console.error(error),
+});

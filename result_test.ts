@@ -172,10 +172,150 @@ Deno.test("isErr", () => {
   assertEquals(y.isErr(), true);
 });
 
+Deno.test("isErrAnd", () => {
+  const x: Result<number, Error> = Err(Error("NotFound"));
+  assertEquals(x.isErrAnd((x) => x.message === "NotFound"), true);
+
+  const y: Result<number, Error> = Err(Error("OtherError"));
+  assertEquals(y.isErrAnd((y) => y.message === "NotFound"), false);
+
+  const z: Result<number, Error> = Ok(123);
+  assertEquals(z.isErrAnd((z) => z.message === "NotFound"), false);
+});
+
 Deno.test("isOk", () => {
   const x: Result<number, string> = Ok(-3);
   assertEquals(x.isOk(), true);
 
   const y: Result<number, string> = Err("Some error message");
   assertEquals(y.isOk(), false);
+});
+
+Deno.test("isOkAnd", () => {
+  const x: Result<number, string> = Ok(2);
+  assertEquals(x.isOkAnd((x) => x > 1), true);
+
+  const y: Result<number, string> = Ok(0);
+  assertEquals(y.isOkAnd((y) => y > 1), false);
+
+  const z: Result<number, string> = Err("foo");
+  assertEquals(z.isOkAnd((z) => z > 1), false);
+});
+
+Deno.test("iter", () => {
+  const x = Ok(4);
+  const iterX = x.iter();
+  const x1 = iterX.next();
+
+  assertEquals(x1.value, Some(4));
+  assertEquals(x1.done, false);
+
+  const x2 = iterX.next();
+
+  assertEquals(x2.value, None());
+  assertEquals(x2.done, true);
+
+  const y = Err("foo");
+  const iterY = y.iter();
+  const y1 = iterY.next();
+
+  assertEquals(y1.value, None());
+  assertEquals(y1.done, true);
+});
+
+Deno.test("map", () => {
+  function callback(value: number): string {
+    return value.toString();
+  }
+
+  const x: Result<number, string> = Ok(2);
+  assertEquals(x.map(callback), Ok("2"));
+
+  const y: Result<number, string> = Err("foo");
+  assertEquals(y.map(callback), Err("foo"));
+});
+
+Deno.test("mapErr", () => {
+  function callback(value: string): number {
+    return value.length;
+  }
+
+  const x: Result<number, string> = Err("foo");
+  assertEquals(x.mapErr(callback), Err(3));
+
+  const y: Result<number, string> = Ok(2);
+  assertEquals(y.mapErr(callback), Ok(2));
+});
+
+Deno.test("mapOr", () => {
+  const x: Result<string, string> = Ok("foo");
+  assertEquals(x.mapOr(42, (x) => x.length), 3);
+
+  const y: Result<string, string> = Err("some error");
+  assertEquals(y.mapOr(42, (y) => y.length), 42);
+});
+
+Deno.test("mapOrElse", () => {
+  const x: Result<number, string> = Ok(2);
+  assertEquals(x.mapOrElse((e) => e.length, (x) => x * 2), 4);
+
+  const y: Result<number, string> = Err("foo");
+  assertEquals(y.mapOrElse((e) => e.length, (y) => y / 7), 3);
+});
+
+Deno.test("ok", () => {
+  throw "TODO";
+});
+
+Deno.test("or", () => {
+  throw "TODO";
+});
+
+Deno.test("orElse", () => {
+  throw "TODO";
+});
+
+Deno.test("transpose", () => {
+  let x: Result<Option<number>, string>;
+  let y: Option<Result<number, string>>;
+
+  x = Ok(Some(5));
+  y = Some(Ok(5));
+  assertEquals(x.transpose(), y);
+
+  x = Err("foo");
+  y = Some(Err("foo"));
+  assertEquals(x.transpose(), y);
+
+  x = Ok(None());
+  y = None();
+  assertEquals(x.transpose(), y);
+});
+
+Deno.test("unwrap", () => {
+  assertEquals(Ok(2).unwrap(), 2);
+  assertThrows(() => Err("foo").unwrap(), Error);
+});
+
+Deno.test("unwrapErr", () => {
+  assertEquals(Err("foo").unwrapErr(), "foo");
+  assertThrows(() => Ok(2).unwrapErr(), Error);
+});
+
+Deno.test("unwrapErrUnchecked", () => {
+  assertEquals(Err("foo").unwrapErrUnchecked(), "foo");
+  assertEquals(Ok(2).unwrapErrUnchecked(), undefined);
+});
+
+Deno.test("unwrapOr", () => {
+  throw "TODO";
+});
+
+Deno.test("unwrapOrElse", () => {
+  throw "TODO";
+});
+
+Deno.test("unwrapUnchecked", () => {
+  assertEquals(Ok(2).unwrapUnchecked(), 2);
+  assertEquals(Err("foo").unwrapUnchecked(), undefined);
 });
