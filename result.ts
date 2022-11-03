@@ -76,18 +76,6 @@ export default class Result<T, E> {
     return this;
   }
 
-  // intoErr() {
-  //   // TODO
-  // }
-
-  // intoOk() {
-  //   // TODO
-  // }
-
-  // intoErrOrOk() {
-  //   // TODO
-  // }
-
   isErr(): this is Err<never, E> {
     return this.discriminant === ResultType.Err;
   }
@@ -125,7 +113,9 @@ export default class Result<T, E> {
   }
 
   mapOrElse<U>(defaultCallback: (error: E) => U, callback: (value: T) => U): U {
-    return this.isOk() ? callback(this.variant1) : defaultCallback(this.variant0);
+    return this.isOk()
+      ? callback(this.variant1)
+      : defaultCallback(this.variant0);
   }
 
   ok(): Option<T> {
@@ -162,8 +152,8 @@ export default class Result<T, E> {
     return this.isOk() ? this.variant1 : defaultValue;
   }
 
-  unwrapOrElse(callback: () => T): T {
-    return this.isOk() ? this.variant1 : callback();
+  unwrapOrElse(callback: (error: E) => T): T {
+    return this.isOk() ? this.variant1 : callback(this.variant0);
   }
 
   unwrapUnchecked(): T {

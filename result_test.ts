@@ -264,15 +264,44 @@ Deno.test("mapOrElse", () => {
 });
 
 Deno.test("ok", () => {
-  throw "TODO";
+  const x: Result<number, string> = Ok(2);
+  assertEquals(x.ok(), Some(2));
+
+  const y: Result<number, string> = Err("foo");
+  assertEquals(y.ok(), None());
 });
 
 Deno.test("or", () => {
-  throw "TODO";
+  let x: Result<number, string>;
+  let y: Result<number, string>;
+
+  x = Ok(2);
+  y = Err("late error");
+  assertEquals(x.or(y), Ok(2));
+
+  x = Err("early error");
+  y = Ok(2);
+  assertEquals(x.or(y), Ok(2));
+
+  x = Err("early error");
+  y = Err("late error");
+  assertEquals(x.or(y), Err("late error"));
+
+  x = Ok(2);
+  y = Ok(100);
+  assertEquals(x.or(y), Ok(2));
 });
 
 Deno.test("orElse", () => {
-  throw "TODO";
+  function square(x: string): Result<number, string> {
+    return Ok(x.length);
+  }
+
+  const ok: Result<number, string> = Ok(2);
+  const err: Result<number, string> = Err("foo");
+
+  assertEquals(ok.orElse(square), Ok(2));
+  assertEquals(err.orElse(square), Ok(3));
 });
 
 Deno.test("transpose", () => {
@@ -308,11 +337,19 @@ Deno.test("unwrapErrUnchecked", () => {
 });
 
 Deno.test("unwrapOr", () => {
-  throw "TODO";
+  const x: Result<number, string> = Ok(9);
+  assertEquals(x.unwrapOr(42), 9);
+
+  const y: Result<number, string> = Err("foo");
+  assertEquals(y.unwrapOr(42), 42);
 });
 
 Deno.test("unwrapOrElse", () => {
-  throw "TODO";
+  const x: Result<number, string> = Ok(9);
+  assertEquals(x.unwrapOrElse((e) => e.length), 9);
+
+  const y: Result<number, string> = Err("foo");
+  assertEquals(y.unwrapOrElse((e) => e.length), 3);
 });
 
 Deno.test("unwrapUnchecked", () => {
