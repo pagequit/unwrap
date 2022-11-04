@@ -1,5 +1,3 @@
-import Option from "./option.ts";
-
-export * from "./match.ts";
-export * from "./option.ts";
-export * from "./result.ts";
+import Option, { None, Some } from "./option.ts";
+import Result, { Err, Ok } from "./result.ts";
+export { Err, None, Ok, Option, Result, Some };
