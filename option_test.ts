@@ -2,12 +2,12 @@ import {
   assertEquals,
   assertInstanceOf,
   assertThrows,
-} from "https://deno.land/std@0.157.0/testing/asserts.ts";
+} from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import {
   assertSpyCall,
   assertSpyCalls,
   spy,
-} from "https://deno.land/std@0.157.0/testing/mock.ts";
+} from "https://deno.land/std@0.161.0/testing/mock.ts";
 import Option, { None, OptionType, Some } from "./option.ts";
 import Result, { Err, Ok } from "./result.ts";
 
