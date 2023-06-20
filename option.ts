@@ -1,6 +1,6 @@
 import Result, { Err, Ok } from "./result.ts";
 
-export default class Option<T> {
+export default class Option<T> implements Iterable<Option<T>> {
   private value: T;
   discriminant: OptionType;
 
@@ -9,7 +9,7 @@ export default class Option<T> {
     this.discriminant = type;
   }
 
-  *[Symbol.iterator]() {
+  *[Symbol.iterator](): Generator<this> {
     if (this.isSome()) {
       yield this;
     }
@@ -127,11 +127,11 @@ export default class Option<T> {
   }
 
   take(): Option<T> {
-    const old = this.isSome() ? Some(this.value) : None();
+    const oldValue = this.isSome() ? Some(this.value) : None();
     this.value = undefined as never;
     this.discriminant = OptionType.None;
 
-    return old;
+    return oldValue;
   }
 
   transpose<U, E>(this: Option<Result<U, E>>): Result<Option<U>, E> {

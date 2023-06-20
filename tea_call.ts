@@ -6,13 +6,12 @@ export default function teaCall<
   A extends unknown[],
   Fn extends (...args: A) => T,
 >(
-  callbackFn: Fn,
+  callback: Fn,
   ...args: A
 ): Result<T, E> {
   try {
-    const result = callbackFn(...args);
-    return Ok(result);
-  } catch (error) {
+    return Ok(callback(...args));
+  } catch (error: unknown) {
     return Err(error as E);
   }
 }

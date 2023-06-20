@@ -1,6 +1,6 @@
 import Option, { None, Some } from "./option.ts";
 
-export default class Result<T, E> {
+export default class Result<T, E> implements Iterable<Option<T>> {
   variant0: E | never;
   variant1: T | never;
   discriminant: ResultType;
@@ -16,7 +16,7 @@ export default class Result<T, E> {
     this.discriminant = discriminant;
   }
 
-  *[Symbol.iterator]() {
+  *[Symbol.iterator](): Generator<Option<T>> {
     if (this.isOk()) {
       yield Some(this.unwrap());
     }
