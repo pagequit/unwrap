@@ -17,14 +17,51 @@ export default class Option<T> implements Iterable<Option<T>> {
     return None();
   }
 
+  /**
+   * Returns the given Option if this is Some.
+   * Otherwise returns None.
+   * @example
+   * ```ts
+   * const x = Some(1);
+   * x.and(Some(2)); // Some(2)
+   *
+   * const y = None();
+   * y.and(Some(2)); // None
+   * ```
+   */
   and<U>(option: Option<U>): Option<U> {
     return this.isSome() ? option : None();
   }
 
+  /**
+   * Returns the result of the given callback with the value of this if this is Some.
+   * Otherwise returns None.
+   * @example
+   * ```ts
+   * const x = Some(1);
+   * x.andThen((value) => Some(value + 1)); // Some(2)
+   *
+   * const y = None();
+   * y.andThen((value) => Some(value + 1)); // None
+   * ```
+   */
   andThen<U>(callback: (value: T) => Option<U>): Option<U> {
     return this.isSome() ? callback(this.value) : None();
   }
 
+  /**
+   * Returns true if this is Some and it's value equals the given value.
+   * Otherwise returns false.
+   * @example
+   * ```ts
+   * const x = Some(1);
+   * x.contains(1); // true
+   * x.contains(2); // false
+   *
+   * const y = None();
+   * y.contains(1); // false
+   * ```
+   */
   contains(value: T): boolean {
     return this.isSome() && value === this.value;
   }
