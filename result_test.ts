@@ -2,12 +2,12 @@ import {
   assertEquals,
   assertInstanceOf,
   assertThrows,
-} from "https://deno.land/std@0.161.0/testing/asserts.ts";
+} from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import {
   assertSpyCall,
   assertSpyCalls,
   spy,
-} from "https://deno.land/std@0.161.0/testing/mock.ts";
+} from "https://deno.land/std@0.192.0/testing/mock.ts";
 import Option, { None, Some } from "./option.ts";
 import Result, { Err, Ok, ResultType } from "./result.ts";
 
@@ -74,6 +74,24 @@ Deno.test("andThen", () => {
 
   assertEquals(ok.andThen(sqThenToString), Ok("4"));
   assertEquals(err.andThen(sqThenToString), Err("not a number"));
+});
+
+Deno.test("clone", () => {
+  const x: Result<{ a: number }, Error> = Ok({ a: 1 });
+  const y: Result<{ a: number }, Error> = Err(new Error("error"));
+  const cx = x.clone();
+  const cy = y.clone();
+
+  x.unwrap().a = 2;
+  cx.unwrap().unwrap().a = 3;
+
+  y.unwrapErr().message = "new error";
+  cy.unwrap().unwrapErr().message = "cloned error";
+
+  assertEquals(x, Ok({ a: 2 }));
+  assertEquals(cx, Ok(Ok({ a: 3 })));
+  assertEquals(y, Err(new Error("new error")));
+  assertEquals(cy, Ok(Err(new Error("cloned error"))));
 });
 
 Deno.test("contains", () => {
@@ -261,6 +279,21 @@ Deno.test("mapOrElse", () => {
 
   const y: Result<number, string> = Err("foo");
   assertEquals(y.mapOrElse((e) => e.length, (y) => y / 7), 3);
+});
+
+Deno.test("match", () => {
+  const x: Result<number, string> = Ok(2);
+  const y: Result<number, string> = Err("error");
+  const matcher = <{
+    Ok: (value: number) => string;
+    Err: (error: string) => string;
+  }> {
+    Ok: (value) => value.toString(),
+    Err: (error) => error,
+  };
+
+  assertEquals(x.match(matcher), "2");
+  assertEquals(y.match(matcher), "error");
 });
 
 Deno.test("ok", () => {

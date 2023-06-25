@@ -32,6 +32,21 @@ export default class Result<T, E> implements Iterable<Option<T>> {
     return this.isErr() ? this : callback(this.variant1);
   }
 
+  clone(): Result<Result<T, E>, Error> {
+    try {
+      return Ok(
+        new Result(
+          structuredClone(
+            this.isOk() ? this.unwrap() : this.unwrapErr(),
+          ),
+          this.discriminant,
+        ),
+      );
+    } catch (error) {
+      return Err(error as Error);
+    }
+  }
+
   contains(value: T): boolean {
     return this.isOk() && this.variant1 === value;
   }
@@ -118,6 +133,10 @@ export default class Result<T, E> implements Iterable<Option<T>> {
       : defaultCallback(this.variant0);
   }
 
+  match<U>({ Err, Ok }: { Err: (error: E) => U; Ok: (value: T) => U }): U {
+    return this.isOk() ? Ok(this.variant1) : Err(this.variant0);
+  }
+
   ok(): Option<T> {
     return this.isOk() ? Some(this.variant1) : None();
   }
@@ -137,11 +156,11 @@ export default class Result<T, E> implements Iterable<Option<T>> {
   }
 
   unwrap(): T {
-    return this.expect(`${this.variant1}`);
+    return this.expect("called `unwrap()` on an `Err`");
   }
 
   unwrapErr(): E {
-    return this.expectErr(`${this.variant0}`);
+    return this.expectErr("called `unwrapErr()` on an `Ok`");
   }
 
   unwrapErrUnchecked(): E {

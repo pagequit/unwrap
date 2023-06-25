@@ -5,10 +5,8 @@ Yet another TypeScript `Option<T>` and `Result<T, E>` implementation.
 ## Examples
 
 ```ts
-import { Collection } from "./mod.ts";
-import { None, Option, Some } from "./mod.ts";
-import { Err, Ok, Result } from "./mod.ts";
-import { teaCall } from "./mod.ts";
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { Collection, None, Some } from "https://deno.land/x/unwrap/mod.ts";
 
 type User = { name: string; age: number };
 const users = Collection.from<string, User>([
@@ -17,30 +15,26 @@ const users = Collection.from<string, User>([
 ]);
 
 const alice = users.get("#123");
-const bob = users.get("#321");
+assertEquals(alice, Some({ name: "Alice", age: 32 }));
 
-const ab = alice.zip(bob);
-let i = 0;
-for (const value of ab) {
-  value.unwrap().forEach(() => {
-    i += 1;
-  });
-}
-console.log(i); // 2
+const charlie = users.get("#000");
+assertEquals(charlie, None());
 
-const none = bob.zip(None());
-let j = 0;
-for (const value of none) {
-  value.unwrap().forEach(() => {
-    j += 1;
-  });
-}
-console.log(j); // 0
+const conditionalMappedValue = users.get("#123").and(users.get("#321")).match({
+  Some: (user) => user.name + " is " + user.age.toString(),
+  None: () => "never",
+});
+assertEquals(conditionalMappedValue, "Bob is 23");
+```
 
+```ts
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { Result, teaCall } from "https://deno.land/x/unwrap/mod.ts";
+
+type User = { name: string; age: number };
 const charlie: Result<User, Error> = teaCall(
   JSON.parse,
   '{ "name": "Charlie", "age": 33 }',
 );
-const ci = charlie.iter();
-console.log(ci.next().value.unwrap().age); // 33
+assertEquals(charlie.unwrap().name, "Charlie");
 ```

@@ -1,5 +1,6 @@
 import { Err, Ok, Result } from "./mod.ts";
 
+/** @experimental */
 export default function teaCall<
   T,
   E,

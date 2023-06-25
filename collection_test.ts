@@ -1,11 +1,11 @@
 import {
   assertEquals,
   assertInstanceOf,
-} from "https://deno.land/std@0.161.0/testing/asserts.ts";
+} from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import {
   assertSpyCalls,
   spy,
-} from "https://deno.land/std@0.161.0/testing/mock.ts";
+} from "https://deno.land/std@0.192.0/testing/mock.ts";
 import { Collection } from "./collection.ts";
 import { None, Some } from "./option.ts";
 

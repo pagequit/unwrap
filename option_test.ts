@@ -2,12 +2,12 @@ import {
   assertEquals,
   assertInstanceOf,
   assertThrows,
-} from "https://deno.land/std@0.161.0/testing/asserts.ts";
+} from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import {
   assertSpyCall,
   assertSpyCalls,
   spy,
-} from "https://deno.land/std@0.161.0/testing/mock.ts";
+} from "https://deno.land/std@0.192.0/testing/mock.ts";
 import Option, { None, OptionType, Some } from "./option.ts";
 import Result, { Err, Ok } from "./result.ts";
 
@@ -74,6 +74,16 @@ Deno.test("andThen", () => {
 
   assertEquals(some.andThen(sqThenToString), Some("4"));
   assertEquals(none.andThen(sqThenToString), None());
+});
+
+Deno.test("clone", () => {
+  const x: Option<{ a: number }> = Some({ a: 1 });
+  const y: Result<Option<{ a: number }>, Error> = x.clone();
+  x.unwrap().a = 2;
+  y.unwrap().unwrap().a = 3;
+
+  assertEquals(x, Some({ a: 2 }));
+  assertEquals(y.unwrap(), Some({ a: 3 }));
 });
 
 Deno.test("contains", () => {
@@ -239,6 +249,18 @@ Deno.test("mapOrElse", () => {
 
   const y: Option<string> = None();
   assertEquals(y.mapOrElse(() => 12, callback), 12);
+});
+
+Deno.test("match", () => {
+  const x = Some("value");
+  const y = None();
+  const matcher = <{ Some: (value: string) => string; None: () => string }> {
+    Some: (value) => "Some" + value,
+    None: () => "None",
+  };
+
+  assertEquals(x.match(matcher), "Somevalue");
+  assertEquals(y.match(matcher), "None");
 });
 
 Deno.test("okOr", () => {
