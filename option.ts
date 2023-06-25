@@ -1,6 +1,6 @@
 import Result, { Err, Ok } from "./result.ts";
 
-export default class Option<T> implements Iterable<Option<T>> {
+export default class Option<T> implements Iterable<T> {
   private value: T;
   discriminant: OptionType;
 
@@ -9,12 +9,10 @@ export default class Option<T> implements Iterable<Option<T>> {
     this.discriminant = type;
   }
 
-  *[Symbol.iterator](): Generator<this> {
+  *[Symbol.iterator](): Generator<T> {
     if (this.isSome()) {
-      yield this;
+      yield this.unwrap();
     }
-
-    return None();
   }
 
   and<U>(option: Option<U>): Option<U> {
@@ -94,7 +92,7 @@ export default class Option<T> implements Iterable<Option<T>> {
     return this.isSome() && predicate(this.value);
   }
 
-  iter(): Generator<this, None, Option<T>> {
+  iter(): Generator<T, None, T> {
     return this[Symbol.iterator]();
   }
 

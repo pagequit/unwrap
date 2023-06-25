@@ -26,21 +26,16 @@ Deno.test("Some", () => {
 });
 
 Deno.test("iterator", () => {
-  function callback<T>(value: T): T {
-    return value;
-  }
-
-  const inspectSpy = spy(callback);
-
-  for (const some of Some("foo")) {
-    inspectSpy(some);
+  var test = 1;
+  for (const some of Some(2)) {
+    test = test + some;
   }
 
   for (const none of None()) {
-    inspectSpy(none);
+    test = test + none;
   }
 
-  assertSpyCalls(inspectSpy, 1);
+  assertEquals(test.unwrap(), 3);
 });
 
 Deno.test("and", () => {
