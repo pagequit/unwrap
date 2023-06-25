@@ -26,16 +26,16 @@ Deno.test("Some", () => {
 });
 
 Deno.test("iterator", () => {
-  var test = 1;
+  let x = 1;
   for (const some of Some(2)) {
-    test = test + some;
+    x = x + some;
   }
 
   for (const none of None()) {
-    test = test + none;
+    x = x + none;
   }
 
-  assertEquals(test.unwrap(), 3);
+  assertEquals(x, 3);
 });
 
 Deno.test("and", () => {

@@ -92,8 +92,12 @@ export default class Option<T> implements Iterable<T> {
     return this.isSome() && predicate(this.value);
   }
 
-  iter(): Generator<T, None, T> {
-    return this[Symbol.iterator]();
+  *iter(): Generator<this, None, Option<T>> {
+    if (this.isSome()) {
+      yield this;
+    }
+
+    return None();
   }
 
   map<U>(callback: (value: T) => U): Option<U> {

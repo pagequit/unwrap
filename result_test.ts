@@ -26,21 +26,16 @@ Deno.test("Ok", () => {
 });
 
 Deno.test("iterator", () => {
-  function callback<T>(value: T): void {
-    console.log(value);
-  }
-
-  const inspectSpy = spy(callback);
-
+  let x = 1;
   for (const ok of Ok(2)) {
-    inspectSpy(ok);
+    x = x + ok;
   }
 
-  for (const err of Err("foo")) {
-    inspectSpy(err);
+  for (const err of <Result<number, number>> Err(1)) {
+    x = x + err;
   }
 
-  assertSpyCalls(inspectSpy, 1);
+  assertEquals(x, 3);
 });
 
 Deno.test("and", () => {
