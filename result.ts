@@ -1,6 +1,6 @@
 import Option, { None, Some } from "./option.ts";
 
-export default class Result<T, E> implements Iterable<Option<T>> {
+export default class Result<T, E> implements Iterable<T> {
   variant0: E | never;
   variant1: T | never;
   discriminant: ResultType;
@@ -16,12 +16,10 @@ export default class Result<T, E> implements Iterable<Option<T>> {
     this.discriminant = discriminant;
   }
 
-  *[Symbol.iterator](): Generator<Option<T>> {
+  *[Symbol.iterator](): Generator<T> {
     if (this.isOk()) {
-      yield Some(this.unwrap());
+      yield this.unwrap();
     }
-
-    return None();
   }
 
   and<U>(result: Result<U, E>): Result<U, E> {
@@ -91,7 +89,7 @@ export default class Result<T, E> implements Iterable<Option<T>> {
     return this;
   }
 
-  isErr(): this is Err<never, E> {
+  isErr(): this is Result<never, E> {
     return this.discriminant === ResultType.Err;
   }
 
@@ -99,7 +97,7 @@ export default class Result<T, E> implements Iterable<Option<T>> {
     return this.isErr() && predicate(this.variant0);
   }
 
-  isOk(): this is Ok<T, never> {
+  isOk(): this is Result<T, never> {
     return this.discriminant === ResultType.Ok;
   }
 
@@ -107,8 +105,12 @@ export default class Result<T, E> implements Iterable<Option<T>> {
     return this.isOk() && predicate(this.variant1);
   }
 
-  iter(): Generator<Some<T>, None, Option<T>> {
-    return this[Symbol.iterator]();
+  *iter(): Generator<Some<T>, None, Option<T>> {
+    if (this.isOk()) {
+      yield Some(this.unwrap());
+    }
+
+    return None();
   }
 
   map<U>(callback: (value: T) => U): Result<U, E> {
@@ -185,14 +187,10 @@ export enum ResultType {
   Ok,
 }
 
-export type Err<T, E> = Result<T, E>;
-
-export function Err<T, E>(value: E): Err<T, E> {
+export function Err<T, E>(value: E): Result<T, E> {
   return new Result<T, E>(value, ResultType.Err);
 }
 
-export type Ok<T, E> = Result<T, E>;
-
-export function Ok<T, E>(value: T): Ok<T, E> {
+export function Ok<T, E>(value: T): Result<T, E> {
   return new Result<T, E>(value, ResultType.Ok);
 }
