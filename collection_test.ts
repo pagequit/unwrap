@@ -260,23 +260,11 @@ Deno.test("intersect", () => {
 Deno.test("iter", () => {
   const a = new Collection<string, number>();
   a.set("foo", 1);
-  a.set("bar", 2);
 
-  function callback(
-    v: number,
-    k: string,
-  ) {
-    assertEquals(typeof v, "number");
-    assertEquals(typeof k, "string");
-  }
+  const y = a.iter();
 
-  const inspectSpy = spy(callback);
-
-  for (const [k, v] of a) {
-    inspectSpy(v, k);
-  }
-
-  assertSpyCalls(inspectSpy, 2);
+  assertEquals(y.next().value, Some(["foo", 1]));
+  assertEquals(y.next().value, None());
 });
 
 Deno.test("keys", () => {

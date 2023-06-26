@@ -162,8 +162,12 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return result;
   }
 
-  iter(): IterableIterator<[K, V]> {
-    return this.entries();
+  *iter(): Generator<Option<[K, V]>, Option<never>, Option<[K, V]>> {
+    for (const element of this.innerMap) {
+      yield Some(element);
+    }
+
+    return None();
   }
 
   keys(): IterableIterator<K> {
