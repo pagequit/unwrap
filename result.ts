@@ -105,7 +105,7 @@ export default class Result<T, E> implements Iterable<T> {
     return this.isOk() && predicate(this.variant1);
   }
 
-  *iter(): Generator<Some<T>, None, Option<T>> {
+  *iter(): Generator<Option<T>, Option<never>, Option<T>> {
     if (this.isOk()) {
       yield Some(this.unwrap());
     }

@@ -80,11 +80,11 @@ export default class Option<T> implements Iterable<T> {
     return this;
   }
 
-  isNone(): this is None {
+  isNone(): this is Option<never> {
     return this.discriminant === OptionType.None;
   }
 
-  isSome(): this is Some<T> {
+  isSome(): this is Option<T> {
     return this.discriminant === OptionType.Some;
   }
 
@@ -92,7 +92,7 @@ export default class Option<T> implements Iterable<T> {
     return this.isSome() && predicate(this.value);
   }
 
-  *iter(): Generator<this, None, Option<T>> {
+  *iter(): Generator<this, Option<never>, Option<T>> {
     if (this.isSome()) {
       yield this;
     }
@@ -203,14 +203,10 @@ export enum OptionType {
   None,
 }
 
-export type None = Option<never>;
-
-export function None(): None {
+export function None(): Option<never> {
   return new Option(undefined as never, OptionType.None);
 }
 
-export type Some<T> = Option<T>;
-
-export function Some<T>(value: T): Some<T> {
+export function Some<T>(value: T): Option<T> {
   return new Option(value, OptionType.Some);
 }
