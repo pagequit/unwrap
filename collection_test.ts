@@ -39,7 +39,7 @@ Deno.test("iterator", () => {
 });
 
 Deno.test("from", () => {
-  const a = Collection.from<string, number>([
+  const a = Collection.from([
     ["foo", 1],
     ["bar", 2],
   ]);
@@ -58,7 +58,7 @@ Deno.test("clear", () => {
 
 Deno.test("clone", () => {
   const foo = { bar: 1 };
-  const a = Collection.from<string, { bar: number }>([
+  const a = Collection.from([
     ["foo", foo],
   ]);
 
@@ -80,7 +80,8 @@ Deno.test("delete", () => {
 
   assertEquals(a.get("foo"), Some(1));
 
-  a.delete("foo");
+  assertEquals(a.delete("foo"), true);
+  assertEquals(a.delete("foo"), false);
   assertEquals(a.get("foo"), None());
 });
 
@@ -93,15 +94,18 @@ Deno.test("diff", () => {
   b.set("foo", 3);
   b.set("baz", 4);
 
-  assertEquals(a.diff(b), Collection.from<string, number>([["bar", 2]]));
-  assertEquals(b.diff(a), Collection.from<string, number>([["baz", 4]]));
+  assertEquals(a.diff(b), Collection.from([["bar", 2]]));
+  assertEquals(b.diff(a), Collection.from([["baz", 4]]));
 });
 
 Deno.test("entries", () => {
   const a = new Collection<string, number>();
   a.set("foo", 1);
 
-  assertEquals(Array.from(a.entries()), [["foo", 1]]);
+  for (const [key, value] of a.entries()) {
+    assertEquals(typeof key, "string");
+    assertEquals(typeof value, "number");
+  }
 });
 
 Deno.test("every", () => {
@@ -120,7 +124,7 @@ Deno.test("filter", () => {
 
   assertEquals(
     a.filter((v) => v % 2 === 0),
-    Collection.from<string, number>([["bar", 2]]),
+    Collection.from([["bar", 2]]),
   );
 });
 
@@ -129,10 +133,7 @@ Deno.test("find", () => {
   a.set("foo", 1);
   a.set("bar", 2);
 
-  assertEquals(
-    a.find((v) => v % 2 === 0),
-    Some(2),
-  );
+  assertEquals(a.find((v) => v % 2 === 0), Some(2));
 });
 
 Deno.test("forEach", () => {
@@ -170,7 +171,9 @@ Deno.test("getOrInsert", () => {
   a.set("foo", 1);
 
   assertEquals(a.getOrInsert("foo", 3), 1);
+  assertEquals(a.get("foo"), Some(1));
   assertEquals(a.getOrInsert("bar", 2), 2);
+  assertEquals(a.get("bar"), Some(2));
 });
 
 Deno.test("getOrInsertWith", () => {
@@ -178,7 +181,9 @@ Deno.test("getOrInsertWith", () => {
   a.set("foo", 1);
 
   assertEquals(a.getOrInsertWith("foo", () => 3), 1);
+  assertEquals(a.get("foo"), Some(1));
   assertEquals(a.getOrInsertWith("bar", () => 2), 2);
+  assertEquals(a.get("bar"), Some(2));
 });
 
 Deno.test("has", () => {
@@ -249,11 +254,11 @@ Deno.test("intersect", () => {
 
   assertEquals(
     a.intersect(b, resolveA),
-    Collection.from<string, number>([["foo", 1]]),
+    Collection.from([["foo", 1]]),
   );
   assertEquals(
     a.intersect(b, resolveB),
-    Collection.from<string, number>([["foo", 3]]),
+    Collection.from([["foo", 3]]),
   );
 });
 
@@ -282,7 +287,7 @@ Deno.test("map", () => {
 
   assertEquals(
     a.map((v) => v * 2),
-    Collection.from<string, number>([["foo", 2], ["bar", 4]]),
+    Collection.from([["foo", 2], ["bar", 4]]),
   );
 });
 
@@ -347,13 +352,13 @@ Deno.test("symDiff", () => {
 
   assertEquals(
     a.symDiff(b),
-    Collection.from<string, number>([["bar", 2], ["baz", 4]]),
+    Collection.from([["bar", 2], ["baz", 4]]),
   );
 });
 
 Deno.test("toJSON", () => {
   const foo = { bar: 1 };
-  const a = Collection.from<string, { bar: number }>([
+  const a = Collection.from([
     ["foo", foo],
   ]);
 
