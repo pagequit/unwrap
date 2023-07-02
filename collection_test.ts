@@ -379,11 +379,7 @@ Deno.test("union", () => {
 
   const z = Collection.from(Object.entries(x));
 
-  function resolveX(
-    value: number,
-    otherValue: number,
-    key: string,
-  ) {
+  function resolveX(value: number, otherValue: number, key: string) {
     assertEquals(typeof value, "number");
     assertEquals(typeof otherValue, "number");
     assertEquals(typeof key, "string");

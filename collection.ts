@@ -53,7 +53,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Removes all elements from the `Collection`.
+   * Removes all entries from the `Collection`.
    * @example
    * ```ts
    * const a = Collection.from([["foo", 1]]);
@@ -91,8 +91,8 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns `true` if an element in the `Collection` existed and
-   * has been removed, or `false` if the element does not exist.
+   * Returns `true` if an entry in the `Collection` existed and
+   * has been removed, or `false` if the entry does not exist.
    * @example
    * ```ts
    * const a = Collection.from([["foo", 1]]);
@@ -146,7 +146,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns `true` if all elements in the `Collection` match the given predicate.
+   * Returns `true` if all entries in the `Collection` match the given predicate.
    * @example
    * ```ts
    * const a = new Collection<string, number>();
@@ -170,7 +170,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
 
   /**
    * Returns a new `Collection`, filtered down to just
-   * the elements that match the given predicate.
+   * the entries that match the given predicate.
    * @example
    * ```ts
    * const a = new Collection<string, number>();
@@ -196,7 +196,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns the first element in the `Collection` that
+   * Returns the first entry in the `Collection` that
    * matches the given predicate, wrapped in a `Option`.
    * @example
    * ```ts
@@ -219,7 +219,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Performs the specified action for each element in the `Collection`.
+   * Performs the specified action for each entry in the `Collection`.
    * @example
    * ```ts
    * const a = new Collection<string, number>();
@@ -239,7 +239,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns the element associated with the specified key, wrapped in a `Option`.
+   * Returns the entry associated with the specified key, wrapped in a `Option`.
    * @example
    * ```ts
    * const a = new Collection<string, number>();
@@ -303,7 +303,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns boolean indicating whether an element with the specified key exists or not.
+   * Returns boolean indicating whether an entry with the specified key exists or not.
    * @example
    * ```ts
    * const a = new Collection<string, number>();
@@ -329,7 +329,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Performs the specified action for each element in the `Collection`.
+   * Performs the specified action for each entry in the `Collection`.
    * Unlike `forEach`, it returns itself.
    * @example
    * ```ts
@@ -460,6 +460,15 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return initialValue;
   }
 
+  /**
+   * Sets a new value for the specified key and returns the old value.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * assertEquals(a.replace("foo", 3), Some(1));
+   * ```
+   */
   replace(key: K, value: V): Option<V> {
     const oldValue = this.get(key);
     this.set(key, value);
@@ -467,11 +476,31 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return oldValue;
   }
 
+  /**
+   * Sets a new value for the specified key and returns the `Collection`.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * assertEquals(a.get("foo"), Some(1));
+   * ```
+   */
   set(key: K, value: V): this {
     this.innerMap.set(key, value);
     return this;
   }
 
+  /**
+   * Returns `true` if at least one entry in the `Collection` match the given predicate.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * assertEquals(a.some((v) => v % 2 === 0), true);
+   * assertEquals(a.some((v) => v % 3 === 0), false);
+   * ```
+   */
   some(
     predicate: (value: V, key: K, collection: this) => boolean,
   ): boolean {
@@ -516,6 +545,14 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return result;
   }
 
+  /**
+   * Returns a JSON representation of the `Collection`, wrapped in a `Result`.
+   * @example
+   * ```ts
+   * const a = Collection.from([["foo", { bar: 1 }]]);
+   * assertEquals(a.toJSON().unwrap(), '[["foo",{"bar":1}]]');
+   * ```
+   */
   toJSON(): Result<string, Error> {
     try {
       return Ok(JSON.stringify(Array.from(this.entries())));
@@ -524,6 +561,22 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     }
   }
 
+  /**
+   * Returns a new `Collection` containing all entries present in both original `Collection`s.
+   * Because it only goes by keys, a resolve function must be specified
+   * that decides which of the two entries will be taken.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * const b = new Collection<string, number>();
+   * b.set("foo", 3);
+   * b.set("duz", 4);
+   * assertEquals(a.union(b, (v) => v), Collection.from([["foo", 1], ["bar", 2], ["duz", 4]]));
+   * assertEquals(a.union(b, (_, v) => v), Collection.from([["foo", 3], ["bar", 2], ["duz", 4]]));
+   * ```
+   */
   union(
     other: Collection<K, V>,
     resolve: (value: V, otherValue: V, key: K) => V,
@@ -540,6 +593,16 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return result;
   }
 
+  /**
+   * Returns an iterable of values in the `Collection`.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * assertEquals(Array.from(a.values()), [1, 2]);
+   * ```
+   */
   values(): IterableIterator<V> {
     return this.innerMap.values();
   }
