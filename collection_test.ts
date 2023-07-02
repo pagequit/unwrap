@@ -305,16 +305,15 @@ Deno.test("reduce", () => {
 
   function reducer(
     acc: string,
-    cur: number,
-    key: string,
+    [key, value]: [string, number],
     collection: Collection<string, number>,
   ): string {
     assertEquals(typeof acc, "string");
-    assertEquals(typeof cur, "number");
+    assertEquals(typeof value, "number");
     assertEquals(typeof key, "string");
     assertInstanceOf(collection, Collection);
 
-    return acc + cur.toString();
+    return acc + value.toString();
   }
 
   assertEquals(a.reduce(reducer, ""), "12");

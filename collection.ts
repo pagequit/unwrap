@@ -437,17 +437,24 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return result;
   }
 
+  /**
+   * Executes a user-supplied reducer callback function on each entry of the `Collection`,
+   * in order, passing in the return value from the calculation on the preceding entry.
+   * The final result of running the reducer across all entries of the `Collection` is a single value.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * assertEquals(a.reduce((acc, [_, cur]) => acc + cur, 0), 3);
+   * ```
+   */
   reduce<U>(
-    reducer: (
-      accumulator: U,
-      currentValue: V,
-      key: K,
-      collection: this,
-    ) => U,
+    reducer: (accumulator: U, current: [K, V], collection: this) => U,
     initialValue: U,
   ): U {
-    for (const [key, value] of this.entries()) {
-      initialValue = reducer(initialValue, value, key, this);
+    for (const entry of this.entries()) {
+      initialValue = reducer(initialValue, entry, this);
     }
 
     return initialValue;
