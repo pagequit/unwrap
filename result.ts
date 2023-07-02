@@ -16,7 +16,7 @@ export default class Result<T, E> implements Iterable<T> {
     this.discriminant = discriminant;
   }
 
-  *[Symbol.iterator](): Generator<T> {
+  *[Symbol.iterator](): IterableIterator<T> {
     if (this.isOk()) {
       yield this.unwrap();
     }
@@ -105,7 +105,7 @@ export default class Result<T, E> implements Iterable<T> {
     return this.isOk() && predicate(this.variant1);
   }
 
-  *iter(): Generator<Option<T>, Option<never>, Option<T>> {
+  *iter(): IterableIterator<Option<T>> {
     if (this.isOk()) {
       yield Some(this.unwrap());
     }

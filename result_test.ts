@@ -28,11 +28,11 @@ Deno.test("Ok", () => {
 Deno.test("iterator", () => {
   let x = 1;
   for (const ok of Ok(2)) {
-    x = x + ok;
+    x += ok;
   }
 
   for (const err of <Result<number, number>> Err(1)) {
-    x = x + err;
+    x += err;
   }
 
   assertEquals(x, 3);
@@ -234,6 +234,13 @@ Deno.test("iter", () => {
 
   assertEquals(y1.value, None());
   assertEquals(y1.done, true);
+
+  let z = 1;
+  for (const value of x.iter()) {
+    z += value.unwrap();
+  }
+
+  assertEquals(z, 5);
 });
 
 Deno.test("map", () => {

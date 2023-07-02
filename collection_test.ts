@@ -266,10 +266,17 @@ Deno.test("iter", () => {
   const a = new Collection<string, number>();
   a.set("foo", 1);
 
-  const y = a.iter();
+  const x = a.iter();
 
-  assertEquals(y.next().value, Some(["foo", 1]));
-  assertEquals(y.next().value, None());
+  assertEquals(x.next().value, Some(["foo", 1]));
+  assertEquals(x.next().value, None());
+
+  let y = 1;
+  for (const entry of a.iter()) {
+    y += entry.unwrap()[1];
+  }
+
+  assertEquals(y, 2);
 });
 
 Deno.test("keys", () => {
@@ -281,14 +288,14 @@ Deno.test("keys", () => {
 });
 
 Deno.test("map", () => {
-  const a = new Collection<string, number>();
-  a.set("foo", 1);
-  a.set("bar", 2);
+  const a = new Collection<{ foo: number }, number>();
+  const x = { foo: 1 };
+  a.set(x, x.foo);
 
-  assertEquals(
-    a.map((v) => v * 2),
-    Collection.from([["foo", 2], ["bar", 4]]),
-  );
+  const b = a.map((v) => v.toString());
+
+  assertEquals(a.get(x), Some(1));
+  assertEquals(b.get(x), Some("1"));
 });
 
 Deno.test("reduce", () => {
@@ -362,7 +369,7 @@ Deno.test("toJSON", () => {
     ["foo", foo],
   ]);
 
-  assertEquals(a.toJSON().unwrap(), '{"foo":{"bar":1}}');
+  assertEquals(a.toJSON().unwrap(), '[["foo",{"bar":1}]]');
 });
 
 Deno.test("union", () => {

@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "./result.ts";
 
 /**
  * An extension of `Map` with additional methods, that works with
- * `Option` and `Result` to avoid `undefined` or throwing errors.
+ * `Option` and `Result` to avoid `undefined` or `try...catch` statements.
  * @example
  * ```ts
  * const a = new Collection<string, number>();
@@ -15,7 +15,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   private innerMap = new Map<K, V>();
 
   /**
-   * Returns the number of elements in the `Collection`.
+   * Returns the number of entires in the `Collection`.
    * @example
    * ```ts
    * const a = Collection.from([["foo", 1]]);
@@ -104,7 +104,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns a new `Collection` containing items where the key is
+   * Returns a new `Collection` containing entries where the key is
    * present in the original `Collection`s but not in the other.
    * @example
    * ```ts
@@ -328,6 +328,19 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return value;
   }
 
+  /**
+   * Performs the specified action for each element in the `Collection`.
+   * Unlike `forEach`, it returns itself.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.inspect((value, key) => {
+   *   assertEquals(typeof value, "number");
+   *   assertEquals(typeof key, "string");
+   * });
+   * ```
+   */
   inspect(callback: (value: V, key: K, collection: this) => void): this {
     for (const [key, value] of this.entries()) {
       callback(value, key, this);
@@ -336,6 +349,23 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return this;
   }
 
+  /**
+   * Returns a new `Collection` containing entries where the keys are
+   * present in both original `Collection`s.
+   * Because it only goes by keys, a resolve function must be specified
+   * that decides which of the two entries will be taken.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * const b = new Collection<string, number>();
+   * b.set("foo", 3);
+   * b.set("duz", 4);
+   * assertEquals(a.intersect(b, (v) => v), Collection.from([["foo", 1]]));
+   * assertEquals(a.intersect(b, (_, v) => v), Collection.from([["foo", 3]]));
+   * ```
+   */
   intersect(
     other: Collection<K, V>,
     resolve: (value: V, otherValue: V, key: K) => V,
@@ -350,18 +380,52 @@ export class Collection<K, V> implements Iterable<[K, V]> {
     return result;
   }
 
-  *iter(): Generator<Option<[K, V]>, Option<never>, Option<[K, V]>> {
-    for (const element of this.entries()) {
-      yield Some(element);
+  /**
+   * Returns an iterator over the `Collection`.
+   * Other than the `@@iterator`, the values are wrapped in an `Option`.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * const x = a.iter();
+   * assertEquals(x.next().value, Some(["foo", 1]));
+   * assertEquals(x.next().value, None());
+   * ```
+   */
+  *iter(): IterableIterator<Option<[K, V]>> {
+    for (const entry of this.entries()) {
+      yield Some(entry);
     }
 
     return None();
   }
 
+  /**
+   * Returns an iterable of keys in the `Collection`.
+   * @example
+   * ```ts
+   * const a = new Collection<string, number>();
+   * a.set("foo", 1);
+   * a.set("bar", 2);
+   * assertEquals(Array.from(a.keys()), ["foo", "bar"]);
+   * ```
+   */
   keys(): IterableIterator<K> {
     return this.innerMap.keys();
   }
 
+  /**
+   * Returns a new `Collection` with the same keys containing entries with the mapped values.
+   * @example
+   * ```ts
+   * const a = new Collection<{ foo: number }, number>();
+   * const x = { foo: 1 };
+   * a.set(x, x.foo);
+   * const b = a.map((v) => v.toString());
+   * assertEquals(a.get(x), Some(1));
+   * assertEquals(b.get(x), Some("1"));
+   * ```
+   */
   map<U>(
     callback: (value: V, key: K, collection: this) => U,
   ): Collection<K, U> {
@@ -414,7 +478,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
   }
 
   /**
-   * Returns a new `Collection` containing items where the key is
+   * Returns a new `Collection` containing entries where the key is
    * present in one of the original `Collection`s but not the other.
    * @example
    * ```ts
@@ -447,7 +511,7 @@ export class Collection<K, V> implements Iterable<[K, V]> {
 
   toJSON(): Result<string, Error> {
     try {
-      return Ok(JSON.stringify(Object.fromEntries(this.entries())));
+      return Ok(JSON.stringify(Array.from(this.entries())));
     } catch (error: unknown) {
       return Err(error as Error);
     }

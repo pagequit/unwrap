@@ -9,7 +9,7 @@ export default class Option<T> implements Iterable<T> {
     this.discriminant = type;
   }
 
-  *[Symbol.iterator](): Generator<T> {
+  *[Symbol.iterator](): IterableIterator<T> {
     if (this.isSome()) {
       yield this.unwrap();
     }
@@ -92,7 +92,7 @@ export default class Option<T> implements Iterable<T> {
     return this.isSome() && predicate(this.value);
   }
 
-  *iter(): Generator<this, Option<never>, Option<T>> {
+  *iter(): IterableIterator<Option<T>> {
     if (this.isSome()) {
       yield this;
     }
