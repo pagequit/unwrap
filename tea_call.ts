@@ -1,6 +1,17 @@
 import { Err, Ok, Result } from "./mod.ts";
 
-/** @experimental */
+/**
+ * Use to call "unsafe" functions, which may throws an error.
+ * @example
+ * ```ts
+ * type User = { name: string; age: number };
+ * const charlie: Result<User, Error> = teaCall(
+ *   JSON.parse,
+ *   '{ "name": "Charlie", "age": 33 }',
+ * );
+ * assertEquals(charlie.unwrap().name, "Charlie");
+ * ```
+ */
 export default function teaCall<
   T,
   E,
