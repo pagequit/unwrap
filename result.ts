@@ -244,8 +244,14 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns `true` if the `Result` is `Err`.
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(-3);
+   * assertEquals(x.isErr(), false);
+   *
+   * const y: Result<number, string> = Err("Some error message");
+   * assertEquals(y.isErr(), true);
    * ```
    */
   isErr(): this is Result<never, E> {
@@ -253,8 +259,18 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns `true` if the `Result` is `Err` and the value inside
+   * of it matches the given predicate.
    * @example
    * ```ts
+   * const x: Result<number, Error> = Err(Error("NotFound"));
+   * assertEquals(x.isErrAnd((x) => x.message === "NotFound"), true);
+   *
+   * const y: Result<number, Error> = Err(Error("OtherError"));
+   * assertEquals(y.isErrAnd((y) => y.message === "NotFound"), false);
+   *
+   * const z: Result<number, Error> = Ok(123);
+   * assertEquals(z.isErrAnd((z) => z.message === "NotFound"), false);
    * ```
    */
   isErrAnd(predicate: (value: E) => boolean): boolean {
@@ -262,8 +278,14 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns `true` if the `Result` is `Ok`.
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(-3);
+   * assertEquals(x.isOk(), true);
+   *
+   * const y: Result<number, string> = Err("Some error message");
+   * assertEquals(y.isOk(), false);
    * ```
    */
   isOk(): this is Result<T, never> {
@@ -271,8 +293,18 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returrns `true` if the `Result` is `Ok` and the value inside
+   * of it matches a predicate.
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(2);
+   * assertEquals(x.isOkAnd((x) => x > 1), true);
+   *
+   * const y: Result<number, string> = Ok(0);
+   * assertEquals(y.isOkAnd((y) => y > 1), false);
+   *
+   * const z: Result<number, string> = Err("foo");
+   * assertEquals(z.isOkAnd((z) => z > 1), false);
    * ```
    */
   isOkAnd(predicate: (value: T) => boolean): boolean {
@@ -280,8 +312,20 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns an `IIterableIterator` over the possibly contained value.
    * @example
    * ```ts
+   * const x = Ok(4);
+   * const iterX = x.iter();
+   * const x1 = iterX.next();
+   *
+   * assertEquals(x1.value, Some(4));
+   * assertEquals(x1.done, false);
+   *
+   * const x2 = iterX.next();
+   *
+   * assertEquals(x2.value, None());
+   * assertEquals(x2.done, true);
    * ```
    */
   *iter(): IterableIterator<Option<T>> {
