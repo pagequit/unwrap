@@ -339,6 +339,15 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * function callback(value: number): string {
+   *   return value.toString();
+   * }
+   *
+   * const x: Result<number, string> = Ok(2);
+   * assertEquals(x.map(callback), Ok("2"));
+   * 
+   * const y: Result<number, string> = Err("foo");
+   * assertEquals(y.map(callback), Err("foo"));
    * ```
    */
   map<U>(callback: (value: T) => U): Result<U, E> {
@@ -350,6 +359,15 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * function callback(value: string): number {
+   *   return value.length;
+   * }
+   * 
+   * const x: Result<number, string> = Err("foo");
+   * assertEquals(x.mapErr(callback), Err(3));
+   * 
+   * const y: Result<number, string> = Ok(2);
+   * assertEquals(y.mapErr(callback), Ok(2));
    * ```
    */
   mapErr<F>(callback: (value: E) => F): Result<T, F> {
@@ -361,6 +379,11 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<string, string> = Ok("foo");
+   * assertEquals(x.mapOr(42, (x) => x.length), 3);
+   * 
+   * const y: Result<string, string> = Err("some error");
+   * assertEquals(y.mapOr(42, (y) => y.length), 42);
    * ```
    */
   mapOr<U>(defaultValue: U, callback: (value: T) => U): U {
@@ -370,6 +393,11 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(2);
+   * assertEquals(x.mapOrElse((e) => e.length, (x) => x * 2), 4);
+   * 
+   * const y: Result<number, string> = Err("foo");
+   * assertEquals(y.mapOrElse((e) => e.length, (y) => y / 7), 3);
    * ```
    */
   mapOrElse<U>(defaultCallback: (error: E) => U, callback: (value: T) => U): U {
