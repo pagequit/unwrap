@@ -328,15 +328,15 @@ Deno.test("or", () => {
 });
 
 Deno.test("orElse", () => {
-  function square(x: string): Result<number, string> {
+  function squareLength(x: string): Result<number, string> {
     return Ok(x.length);
   }
 
   const ok: Result<number, string> = Ok(2);
   const err: Result<number, string> = Err("foo");
 
-  assertEquals(ok.orElse(square), Ok(2));
-  assertEquals(err.orElse(square), Ok(3));
+  assertEquals(ok.orElse(squareLength), Ok(2));
+  assertEquals(err.orElse(squareLength), Ok(3));
 });
 
 Deno.test("transpose", () => {

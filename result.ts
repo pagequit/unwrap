@@ -409,6 +409,18 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(2);
+   * const y: Result<number, string> = Err("error");
+   * const matcher = <{
+   *   Ok: (value: number) => string;
+   *   Err: (error: string) => string;
+   * }> {
+   *   Ok: (value) => value.toString(),
+   *   Err: (error) => error,
+   * };
+   * 
+   * assertEquals(x.match(matcher), "2");
+   * assertEquals(y.match(matcher), "error");
    * ```
    */
   match<U>({ Err, Ok }: { Err: (error: E) => U; Ok: (value: T) => U }): U {
@@ -418,6 +430,11 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(2);
+   * assertEquals(x.ok(), Some(2));
+   * 
+   * const y: Result<number, string> = Err("foo");
+   * assertEquals(y.ok(), None());
    * ```
    */
   ok(): Option<T> {
@@ -427,6 +444,24 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * let x: Result<number, string>;
+   * let y: Result<number, string>;
+   * 
+   * x = Ok(2);
+   * y = Err("late error");
+   * assertEquals(x.or(y), Ok(2));
+   * 
+   * x = Err("early error");
+   * y = Ok(2);
+   * assertEquals(x.or(y), Ok(2));
+   * 
+   * x = Err("early error");
+   * y = Err("late error");
+   * assertEquals(x.or(y), Err("late error"));
+   * 
+   * x = Ok(2);
+   * y = Ok(100);
+   * assertEquals(x.or(y), Ok(2));
    * ```
    */
   or<F>(result: Result<T, F>): Result<T, F> {
@@ -436,6 +471,15 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * function squareLength(x: string): Result<number, string> {
+   *   return Ok(x.length);
+   * }
+   * 
+   * const ok: Result<number, string> = Ok(2);
+   * const err: Result<number, string> = Err("foo");
+   * 
+   * assertEquals(ok.orElse(squareLength), Ok(2));
+   * assertEquals(err.orElse(squareLength), Ok(3));
    * ```
    */
   orElse<F>(callback: (value: E) => Result<T, F>): Result<T, F> {
@@ -445,6 +489,20 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * let x: Result<Option<number>, string>;
+   * let y: Option<Result<number, string>>;
+   * 
+   * x = Ok(Some(5));
+   * y = Some(Ok(5));
+   * assertEquals(x.transpose(), y);
+   * 
+   * x = Err("foo");
+   * y = Some(Err("foo"));
+   * assertEquals(x.transpose(), y);
+   * 
+   * x = Ok(None());
+   * y = None();
+   * assertEquals(x.transpose(), y);
    * ```
    */
   transpose<U, E>(this: Result<Option<U>, E>): Option<Result<U, E>> {
@@ -456,6 +514,8 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * assertEquals(Ok(2).unwrap(), 2);
+   * assertThrows(() => Err("foo").unwrap(), Error);
    * ```
    */
   unwrap(): T {
@@ -465,6 +525,8 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * assertEquals(Err("foo").unwrapErr(), "foo");
+   * assertThrows(() => Ok(2).unwrapErr(), Error);
    * ```
    */
   unwrapErr(): E {
@@ -474,6 +536,8 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * assertEquals(Err("foo").unwrapErrUnchecked(), "foo");
+   * assertEquals(Ok(2).unwrapErrUnchecked(), undefined);
    * ```
    */
   unwrapErrUnchecked(): E {
@@ -483,6 +547,11 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(9);
+   * assertEquals(x.unwrapOr(42), 9);
+   * 
+   * const y: Result<number, string> = Err("foo");
+   * assertEquals(y.unwrapOr(42), 42);
    * ```
    */
   unwrapOr(defaultValue: T): T {
@@ -492,6 +561,11 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * const x: Result<number, string> = Ok(9);
+   * assertEquals(x.unwrapOrElse((e) => e.length), 9);
+   * 
+   * const y: Result<number, string> = Err("foo");
+   * assertEquals(y.unwrapOrElse((e) => e.length), 3);
    * ```
    */
   unwrapOrElse(callback: (error: E) => T): T {
@@ -501,6 +575,8 @@ export default class Result<T, E> implements Iterable<T> {
   /**
    * @example
    * ```ts
+   * assertEquals(Ok(2).unwrapUnchecked(), 2);
+   * assertEquals(Err("foo").unwrapUnchecked(), undefined);
    * ```
    */
   unwrapUnchecked(): T {
