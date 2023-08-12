@@ -21,7 +21,7 @@ Deno.test("teaCall should return Err with the error thrown by the callback funct
     throw new Error("Something went wrong");
   }
 
-  const result = teaCall<never, never, never, typeof callback>(callback);
+  const result = teaCall<never, Error, [], typeof callback>(callback);
 
   assertEquals(result, Err(new Error("Something went wrong")));
 });
