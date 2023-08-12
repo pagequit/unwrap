@@ -1,5 +1,6 @@
 import Result, { Err, Ok } from "./result.ts";
 
+/** `Option` is a type that represents either a `Some` or `None`. */
 export default class Option<T> implements Iterable<T> {
   private value: T;
   discriminant: OptionType;
@@ -9,6 +10,7 @@ export default class Option<T> implements Iterable<T> {
     this.discriminant = type;
   }
 
+  /** Called by the semantics of the for-of statement. */
   *[Symbol.iterator](): IterableIterator<T> {
     if (this.isSome()) {
       yield this.unwrap();
