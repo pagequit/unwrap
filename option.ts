@@ -18,6 +18,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the given `Option` if it's is `Some`, otherwise returns the `None`.
    * @example
    * ```ts
    * let x: Option<number>;
@@ -45,6 +46,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Calls the given callback if it's is `Some`, otherwise returns the `None`.
    * @example
    * ```ts
    * function sqThenToString(x: number): Option<string> {
@@ -63,6 +65,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns a structured clone of the `Option`, wrapped in a `Result`.
    * @example
    * ```ts
    * const x: Option<{ a: number }> = Some({ a: 1 });
@@ -84,6 +87,7 @@ export default class Option<T> implements Iterable<T> {
 
   /**
    * @example
+   * Returns `true` if it's `Some` and contains the given value.
    * ```ts
    * const x: Option<number> = Some(2);
    * assertEquals(x.contains(2), true);
@@ -100,6 +104,10 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value if it's is `Some`, otherwise throws an error with the given message.
+   * Because this function may throw, its use is discouraged. Instead, prefer to use pattern matching
+   * and handle the `Err` case explicitly, or call `unwrapOr`, `unwrapOrElse`.
+   * @throws `Error`
    * @example
    * ```ts
    * assertEquals(Some(2).expect("foo"), 2);
@@ -115,6 +123,9 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns `None` if the `Option` is `None`, otherwise calls the given
+   * predicate function and returns also `None` if the predicate returns `false`.
+   * Otherwise returns an `Option` containing the wrapped value.
    * @example
    * ```ts
    * function isEven(n: number): boolean {
@@ -127,10 +138,12 @@ export default class Option<T> implements Iterable<T> {
    * ```
    */
   filter(predicate: (value: T) => boolean): Option<T> {
-    return (this.isSome() && predicate(this.value)) ? this : None();
+    return (this.isSome() && predicate(this.value)) ? Some(this.value) : None();
   }
 
   /**
+   * Converts from `Option<Option<T>>` to `Option<T>`.
+   * Flattening only removes one level of nesting at a time.
    * @example
    * ```ts
    * const x: Option<Option<string>> = Some(Some("foo"));
@@ -149,6 +162,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Inserts the given value into the `Option` if it's a `None`, then returns the contained value.
    * @example
    * ```ts
    * const x: Option<number> = None();
@@ -167,6 +181,8 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Inserts a value computed from the given callback into the `Option`
+   * if it's a `None`, then returns the contained value.
    * @example
    * ```ts
    * const x: Option<number> = None();
@@ -185,6 +201,8 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Inserts the given value into the `Option`, then returns the contained value.
+   * If the `Option` alrady contains avalue, the old value is dropped.
    * @example
    * ```ts
    * const opt: Option<number[]> = None();
@@ -203,6 +221,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Calls the given callback if the `Option` is `Some`.
    * @example
    * ```ts
    * function callback<T>(value: T): void {
@@ -230,6 +249,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * A type guard that returns `true` if the `Option` is `None`, otherwise returns `false`.
    * @example
    * ```ts
    * const x = Some(2);
@@ -244,6 +264,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * A type guard that returns `true` if the `Option` is `Some`, otherwise returns `false`.
    * @example
    * ```ts
    * const x = Some(2);
@@ -258,6 +279,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns `true` if the `Option` is `Some` and the wrapped value satisfies the given predicate.
    * @example
    * ```ts
    * function predicate(value: number): boolean {
@@ -274,6 +296,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns an `IIterableIterator` over the possibly contained value.
    * @example
    * ```ts
    * const x = Some(4);

@@ -196,6 +196,7 @@ export default class Result<T, E> implements Iterable<T> {
 
   /**
    * Converts from `Result<Result<T, E>, E>` to `Result<T, E>`
+   * Flattening only removes one level of nesting at a time.
    * @example
    * ```ts
    * const x: Result<Result<number, string>, string> = Ok(Ok(2));
