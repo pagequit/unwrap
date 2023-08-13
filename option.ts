@@ -668,15 +668,30 @@ export default class Option<T> implements Iterable<T> {
   }
 }
 
+/** Used as the discriminant for the `Option` type. */
 export enum OptionType {
   Some,
   None,
 }
 
+/**
+ * Creates an `Option<T>` that represents `None`.
+ * @example
+ * ```ts
+ * const none: Option<number> = None();
+ * ```
+ */
 export function None(): Option<never> {
   return new Option(undefined as never, OptionType.None);
 }
 
+/**
+ * Creates an `Option<T>` from the given value.
+ * @example
+ * ```ts
+ * const x: Option<number> = Some(2);
+ * ```
+ */
 export function Some<T>(value: T): Option<T> {
   return new Option(value, OptionType.Some);
 }

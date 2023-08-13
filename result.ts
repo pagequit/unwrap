@@ -622,7 +622,7 @@ export function Err<T, E>(value: E): Result<T, E> {
 }
 
 /**
- * Creates a `Result<T, E>` from a given value.
+ * Creates a `Result<T, E>` from the given value.
  * @example
  * ```ts
  * const x: Result<number, string> = Ok(2);
