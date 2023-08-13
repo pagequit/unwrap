@@ -25,7 +25,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Returns the given `Result` if `this` is `Ok`, otherwise returns the `Err`.
+   * Returns the given `Result` if it's is `Ok`, otherwise returns the `Err`.
    * @example
    * ```ts
    * let x: Result<number, string>;
@@ -53,7 +53,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Calls the given callback if `this` is `Ok`, otherwise returns the `Err`.
+   * Calls the given callback if it's is `Ok`, otherwise returns the `Err`.
    * @example
    * ```ts
    * function sqThenToString(x: number): Result<string, string> {
@@ -159,10 +159,10 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Returns the contained value if `this` is `Ok`, otherwise throws an error with the given message.
+   * Returns the contained value if it's is `Ok`, otherwise throws an error with the given message.
    * Because this function may throw, its use is discouraged. Instead, prefer to use pattern matching
    * and handle the `Err` case explicitly, or call `unwrapOr`, `unwrapOrElse`.
-   * @throws
+   * @throws `Error`
    * @example
    * ```ts
    * assertThrows(() => Err(1).expect("foo"), Error, "foo");
@@ -177,10 +177,10 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Returns the contained value if `this` is `Err`, otherwise throws an error with the given message.
+   * Returns the contained value if it's is `Err`, otherwise throws an error with the given message.
    * Because this function may throw, its use is discouraged. Instead, prefer to use pattern matching
    * and handle the `Err` case explicitly.
-   * @throws
+   * @throws `Error`
    * @example
    * ```ts
    * assertThrows(() => Err(1).expect("foo"), Error, "foo");
@@ -216,7 +216,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Calls the given callback if `this` is `Ok`.
+   * Calls the given callback if it's is `Ok`.
    * @example
    * ```ts
    * Ok(2).inspect(console.log);
@@ -231,7 +231,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Calls the given callback if `this` is `Err`.
+   * Calls the given callback if it's is `Err`.
    * @example
    * ```ts
    * Err("foo").inspect(console.log);
@@ -337,6 +337,8 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Maps a `Result<T, E>` to `Result<U, E>` by applying a functions
+   * to a contained `Ok` value, leaving an `Err` value untouched.
    * @example
    * ```ts
    * function callback(value: number): string {
@@ -345,7 +347,7 @@ export default class Result<T, E> implements Iterable<T> {
    *
    * const x: Result<number, string> = Ok(2);
    * assertEquals(x.map(callback), Ok("2"));
-   * 
+   *
    * const y: Result<number, string> = Err("foo");
    * assertEquals(y.map(callback), Err("foo"));
    * ```
@@ -357,15 +359,17 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Maps a `Result<T, E>` to `Result<T, F>` by applying a functions
+   * to a contained `Err` value, leaving an `Ok` value untouched.
    * @example
    * ```ts
    * function callback(value: string): number {
    *   return value.length;
    * }
-   * 
+   *
    * const x: Result<number, string> = Err("foo");
    * assertEquals(x.mapErr(callback), Err(3));
-   * 
+   *
    * const y: Result<number, string> = Ok(2);
    * assertEquals(y.mapErr(callback), Ok(2));
    * ```
@@ -377,11 +381,12 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the provided default if `Err`, or applies a function to the contained `Ok` value.
    * @example
    * ```ts
    * const x: Result<string, string> = Ok("foo");
    * assertEquals(x.mapOr(42, (x) => x.length), 3);
-   * 
+   *
    * const y: Result<string, string> = Err("some error");
    * assertEquals(y.mapOr(42, (y) => y.length), 42);
    * ```
@@ -391,11 +396,13 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Mapps a `Result<T, E>` to `U` by applying a fallback function to a
+   * containded `Err` value, or a callback funtion to contained `Ok`.
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(2);
    * assertEquals(x.mapOrElse((e) => e.length, (x) => x * 2), 4);
-   * 
+   *
    * const y: Result<number, string> = Err("foo");
    * assertEquals(y.mapOrElse((e) => e.length, (y) => y / 7), 3);
    * ```
@@ -407,6 +414,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Used to handle either `Ok` or `Err` by invoking the appropriate callback.
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(2);
@@ -418,7 +426,7 @@ export default class Result<T, E> implements Iterable<T> {
    *   Ok: (value) => value.toString(),
    *   Err: (error) => error,
    * };
-   * 
+   *
    * assertEquals(x.match(matcher), "2");
    * assertEquals(y.match(matcher), "error");
    * ```
@@ -428,11 +436,12 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Converts a `Result<T, E>` to an `Option<T>`
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(2);
    * assertEquals(x.ok(), Some(2));
-   * 
+   *
    * const y: Result<number, string> = Err("foo");
    * assertEquals(y.ok(), None());
    * ```
@@ -442,23 +451,24 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the given `Result` if it's `Err`, otherwise returns the `Ok` value.
    * @example
    * ```ts
    * let x: Result<number, string>;
    * let y: Result<number, string>;
-   * 
+   *
    * x = Ok(2);
    * y = Err("late error");
    * assertEquals(x.or(y), Ok(2));
-   * 
+   *
    * x = Err("early error");
    * y = Ok(2);
    * assertEquals(x.or(y), Ok(2));
-   * 
+   *
    * x = Err("early error");
    * y = Err("late error");
    * assertEquals(x.or(y), Err("late error"));
-   * 
+   *
    * x = Ok(2);
    * y = Ok(100);
    * assertEquals(x.or(y), Ok(2));
@@ -469,15 +479,16 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Calls the given callback if the `Result` is `Err`, otherwise returns the `Ok` value.
    * @example
    * ```ts
    * function squareLength(x: string): Result<number, string> {
    *   return Ok(x.length);
    * }
-   * 
+   *
    * const ok: Result<number, string> = Ok(2);
    * const err: Result<number, string> = Err("foo");
-   * 
+   *
    * assertEquals(ok.orElse(squareLength), Ok(2));
    * assertEquals(err.orElse(squareLength), Ok(3));
    * ```
@@ -487,19 +498,20 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Transposes a `Result` of an `Option` into an `Option` of a `Result`.
    * @example
    * ```ts
    * let x: Result<Option<number>, string>;
    * let y: Option<Result<number, string>>;
-   * 
+   *
    * x = Ok(Some(5));
    * y = Some(Ok(5));
    * assertEquals(x.transpose(), y);
-   * 
+   *
    * x = Err("foo");
    * y = Some(Err("foo"));
    * assertEquals(x.transpose(), y);
-   * 
+   *
    * x = Ok(None());
    * y = None();
    * assertEquals(x.transpose(), y);
@@ -512,6 +524,8 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value if it's is `Ok`, otherwise throws an error.
+   * @throws `Error`
    * @example
    * ```ts
    * assertEquals(Ok(2).unwrap(), 2);
@@ -523,6 +537,8 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained error if it's is `Err`, otherwise throws an error.
+   * @throws `Error`
    * @example
    * ```ts
    * assertEquals(Err("foo").unwrapErr(), "foo");
@@ -534,6 +550,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained `Err` value, without checking that the value is not an `Ok`.
    * @example
    * ```ts
    * assertEquals(Err("foo").unwrapErrUnchecked(), "foo");
@@ -545,11 +562,12 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained `Ok` value or a provided default.
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(9);
    * assertEquals(x.unwrapOr(42), 9);
-   * 
+   *
    * const y: Result<number, string> = Err("foo");
    * assertEquals(y.unwrapOr(42), 42);
    * ```
@@ -559,11 +577,12 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained `Ok` value or computes it from a closure.
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(9);
    * assertEquals(x.unwrapOrElse((e) => e.length), 9);
-   * 
+   *
    * const y: Result<number, string> = Err("foo");
    * assertEquals(y.unwrapOrElse((e) => e.length), 3);
    * ```
@@ -573,6 +592,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained `Ok` value, without checking that the value is not an `Err`.
    * @example
    * ```ts
    * assertEquals(Ok(2).unwrapUnchecked(), 2);
@@ -584,15 +604,30 @@ export default class Result<T, E> implements Iterable<T> {
   }
 }
 
+/** Used as the discriminant for the `Result` type. */
 export enum ResultType {
   Err,
   Ok,
 }
 
+/**
+ * Creates a `Result<T, E>` from a given error.
+ * @example
+ * ```ts
+ * const x: Result<number, string> = Err("foo");
+ * ```
+ */
 export function Err<T, E>(value: E): Result<T, E> {
   return new Result<T, E>(value, ResultType.Err);
 }
 
+/**
+ * Creates a `Result<T, E>` from a given value.
+ * @example
+ * ```ts
+ * const x: Result<number, string> = Ok(2);
+ * ```
+ */
 export function Ok<T, E>(value: T): Result<T, E> {
   return new Result<T, E>(value, ResultType.Ok);
 }
