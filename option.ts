@@ -335,10 +335,11 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Maps an `Option<T>` to an `Option<U>` by applying a functions to the contained value.
    * @example
    * ```ts
    * function callback(value: string): number {
-   *  return value.length;
+   *   return value.length;
    * }
    *
    * const x: Option<string> = Some("foo");
@@ -353,6 +354,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the provided default value if it's a `None`, or applies the given callback to the contained value.
    * @example
    * ```ts
    * function callback(value: string): number {
@@ -371,6 +373,8 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Mapps a `Option<T>` to `U` by applying a fallback function
+   * to a `None`, or a callback funtion to a `Some`.
    * @example
    * ```ts
    * function callback(value: string): number {
@@ -389,6 +393,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Used to handle either `Some` or `None` by invoking the appropriate callback.
    * @example
    * ```ts
    * const x = Some("value");
@@ -407,6 +412,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Transforms the `Option<T>` into a `Result<T, E>`, mapping `Some` to `Ok` and `None` to `Err`.
    * @example
    * ```ts
    * const x: Option<string> = Some("foo");
@@ -421,6 +427,8 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Transforms the `Option<T>` into a `Result<T, E>`,
+   * mapping `Some` to `Ok` and `None` to `Err`, provided by a callback.
    * @example
    * ```ts
    * const x: Option<string> = Some("foo");
@@ -435,6 +443,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the given `Option` if it's `None`, otherwise returns the `Some`.
    * @example
    * ```ts
    * let x: Option<number>;
@@ -462,6 +471,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Calls the given callback if the `Option` is `None`, otherwise returns the `Some`.
    * @example
    * ```ts
    * function nobody(): Option<string> {
@@ -484,6 +494,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Replaces the actual value in the `Option` with the value given, returning the old value.
    * @example
    * ```ts
    * let x = Some(2);
@@ -508,6 +519,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Takes the value out the `Option`, leaving a `None` in its place.
    * @example
    * ```ts
    * let x = Some(2);
@@ -532,6 +544,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Transposes an `Option` of `Result` into a `Result` of `Option`.
    * @example
    * ```ts
    * let x: Result<Option<number>, string>;
@@ -559,6 +572,8 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value if it's `Some`, otherwise throws an error.
+   * @throws `Error`
    * @example
    * ```ts
    * assertEquals(Some(2).unwrap(), 2);
@@ -570,6 +585,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value if it's `Some`, otherwise returns the provided default value.
    * @example
    * ```ts
    * assertEquals(Some("foo").unwrapOr("bar"), "foo");
@@ -583,6 +599,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value or computes a default value from a callback.
    * @example
    * ```ts
    * const k = 10;
@@ -597,6 +614,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the contained value, without checking that the value is a `Some`.
    * @example
    * ```ts
    * assertEquals(Some("foo").unwrapUnchecked(), "foo");
@@ -608,6 +626,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Unzips the `Option<[U, V]>` into an array of `Option<U>` and `Option<V>`.
    * @example
    * ```ts
    * const x: Option<[number, string]> = Some([2, "foo"]);
@@ -624,6 +643,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Returns `Some` if exactly one is `Some`, otherwise returns `None`.
    * @example
    * ```ts
    * let x: Option<number>;
@@ -651,6 +671,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Zips the `Option<T>` with another `Option<U>` into a `Option<[T, U]>`.
    * @example
    * ```ts
    * const x = Some(2);
@@ -668,6 +689,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
+   * Zips the `Option<T>` with another `Option` evaluated by a callback.
    * @example
    * ```ts
    * function Point(x: number, y: number) {

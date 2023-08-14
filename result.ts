@@ -452,7 +452,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Returns the given `Result` if it's `Err`, otherwise returns the `Ok` value.
+   * Returns the given `Result` if it's `Err`, otherwise returns the `Ok`.
    * @example
    * ```ts
    * let x: Result<number, string>;
@@ -480,7 +480,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Calls the given callback if the `Result` is `Err`, otherwise returns the `Ok` value.
+   * Calls the given callback if the `Result` is `Err`, otherwise returns the `Ok`.
    * @example
    * ```ts
    * function squareLength(x: string): Result<number, string> {
@@ -578,7 +578,7 @@ export default class Result<T, E> implements Iterable<T> {
   }
 
   /**
-   * Returns the contained `Ok` value or computes it from a closure.
+   * Returns the contained `Ok` value or computes a default value from a callback.
    * @example
    * ```ts
    * const x: Result<number, string> = Ok(9);
