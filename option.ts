@@ -373,7 +373,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
-   * Mapps a `Option<T>` to `U` by applying a fallback function
+   * Mapps an `Option<T>` to `U` by applying a fallback function
    * to a `None`, or a callback funtion to a `Some`.
    * @example
    * ```ts
@@ -671,7 +671,7 @@ export default class Option<T> implements Iterable<T> {
   }
 
   /**
-   * Zips the `Option<T>` with another `Option<U>` into a `Option<[T, U]>`.
+   * Zips the `Option<T>` with another `Option<U>` into an `Option<[T, U]>`.
    * @example
    * ```ts
    * const x = Some(2);

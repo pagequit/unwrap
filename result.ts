@@ -202,7 +202,7 @@ export default class Result<T, E> implements Iterable<T> {
    * const x: Result<Result<number, string>, string> = Ok(Ok(2));
    * assertEquals(Ok(2), x.flatten());
    *
-   * const y: Result<Result<number, string>, string> = Err("foo");
+   * const y: Result<Result<number, string>, string> = Ok<Err("foo"));
    * assertEquals(Err("foo"), y.flatten());
    *
    * const z: Result<Result<Result<number, string>, string>, string> = Ok(
