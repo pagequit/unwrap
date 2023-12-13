@@ -282,9 +282,9 @@ export class Collection<K, V> implements Iterable<[K, V]> {
    * ```ts
    * const a = new Collection<string, number>();
    * a.set("foo", 1);
-   * assertEquals(a.getOrInsert("foo", () => 3), 1);
+   * assertEquals(a.getOrInsertWith("foo", () => 3), 1);
    * assertEquals(a.get("foo"), Some(1));
-   * assertEquals(a.getOrInsert("bar", 2), 2);
+   * assertEquals(a.getOrInsertWith("bar", () => 2), 2);
    * assertEquals(a.get("bar"), Some(2));
    * ```
    */
